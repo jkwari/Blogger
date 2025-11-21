@@ -105,7 +105,14 @@ class Feed extends Component {
     this.setState({
       editLoading: true,
     });
-    // Set up data (with image!)
+    // Since we are dealing with images and those images can be big in size we
+    // can't use applicatio/json anymore because the image size can be big and json is focused on
+    // text data that don't have big size.
+    // Here we can use an alternative like formData, to help with this issue
+    const formData = new FormData();
+    formData.append("title", postData.title);
+    formData.append("content", postData.content);
+    formData.append("image", postData.image);
     let url = "http://localhost:8080/feed/addPost";
     let method = "POST";
     if (this.state.editPost) {
@@ -114,13 +121,7 @@ class Feed extends Component {
 
     fetch(url, {
       method: method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: postData.title,
-        content: postData.content,
-      }),
+      body: formData,
     })
       .then((res) => {
         if (res.status !== 200 && res.status !== 201) {
